@@ -13,6 +13,7 @@ znajdź lokalne ip swojego urządzenia (`192.168.x.x`), wpisując w terminalu:
 - `ifconfig | grep inet` (Linux)
 
 na innym komputerze w sieci LAN otwórz w przeglądarce adres `<ip-hosta>/front.html`
+koniec
 
 </br></br></br>
 
@@ -30,3 +31,4 @@ encuentra la IP local de tu dispositivo (`192.168.x.x`) escribiendo en la termin
 - `ifconfig | grep inet` (Linux)
 
 en otro ordenador dentro de la misma red LAN, abre en el navegador la dirección `<ip-del-host>/front.html`
+fin

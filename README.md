@@ -13,11 +13,9 @@ znajdź lokalne ip swojego urządzenia (`192.168.x.x`), wpisując w terminalu:
 - `ifconfig | grep inet` (Linux)
 
 na innym komputerze w sieci LAN otwórz w przeglądarce adres `<ip-hosta>/front.html`
-
-
+</br></br></br>
 ---
-
-
+</br></br></br>
 # requisitos (ES)
 - [xampp](https://www.apachefriends.org/)
 

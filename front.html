@@ -8,13 +8,133 @@
     <style>
     
     body {
-        background-color: rgb(42, 43, 42);
+        background-color: #2c2b2b;
+        color: white;
+
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        /* justify-content: center; */
+        height: 100vh;
+
+        font-family: monospace;
+    }
+
+    #chat-container {
+        align-self: center;
+        width: 50vw;
+        height: 90vh;
+
+    }
+
+    .username {
+        font-weight: bold;
+        color: #8ae234;
+    }
+    
+    
+    
+    #input-container {
+        width: calc(100vw - 1vh);
+        height: 9vh;
+        margin-top: 1vh;
+        margin-left: 1vh;
+        
+        text-align: left;
+        cursor: default;
+        float: left;
+
+    }
+
+    #text-input {
+        all: unset;
+        caret-color: transparent;
+        background-color: #2c2b2b;
+
+        cursor: default;
+
+        width: 10vw;
+        margin-left: 1ch;
+    }
+
+    .cursor {
+        width: 8px;
+        height: 15px;
+
+        display: inline-block;
+        justify-self: left;
+        vertical-align: text-bottom;
+
+
+        background: white;
+        animation: blink 1s step-start infinite;
+    }
+
+    @keyframes blink {
+        50% {
+            opacity: 0;
+        }
     }
 
     </style>
 
 </head>
 <body>
-    test
+
+
+<div id="input-container">
+    <span class="username">anonymous</span>:<input type="text" id="text-input" autocomplete="off" spellcheck="false"><span class="cursor"></span>
+</div>
+
+
+
+<div id="chat-container">
+    
+</div>
+
+
+
+<script>
+
+let text_input = document.getElementById("text-input");
+
+function text_input_on_blur () {
+    text_input.focus();
+}
+
+function text_input_on_input () {
+    text_input.style.width = `${text_input.value.length}ch`;
+}
+
+function text_input_on_keyup (event) {
+    if (event.key === "Enter") {
+        submit_text(text_input.value);
+    }
+}
+
+text_input.addEventListener("blur", text_input_on_blur);
+text_input_on_blur();
+
+text_input.addEventListener("input", text_input_on_input);
+text_input_on_input();
+
+function submit_text (text) {
+    fetch("back.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+            
+        })
+    })
+}
+
+text_input.addEventListener("keyup", text_input_on_keyup);
+
+</script>
+
+
+
 </body>
 </html>

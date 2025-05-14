@@ -58,16 +58,18 @@
     }
 
     .cursor {
-        width: 8px;
-        height: 15px;
+        width: 1ch;
+        height: 1lh;
 
         display: inline-block;
-        justify-self: left;
+        position: fixed;
+        /* justify-self: left; */
         vertical-align: text-bottom;
 
 
         background: white;
         animation: blink 1s step-start infinite;
+        /* z-index: 99; */
     }
 
     @keyframes blink {
@@ -76,16 +78,19 @@
         }
     }
 
+    ::selection {
+        background: white;
+        color: #2c2b2b;
+    }
+
     </style>
 
 </head>
 <body>
 
-
 <div id="input-container">
-    <span class="username">anonymous</span>:<input type="text" id="text-input" autocomplete="off" spellcheck="false"><span class="cursor"></span>
+    <span class="username" id="username">anonymous</span>:<input type="text" id="text-input" autocomplete="off" spellcheck="false"><span class="cursor" id="cursor"></span>
 </div>
-
 
 
 <div id="chat-container">
@@ -93,10 +98,11 @@
 </div>
 
 
-
 <script>
 
+let name_span = document.getElementById("username");
 let text_input = document.getElementById("text-input");
+let cursor_span = document.getElementById("cursor");
 
 function text_input_on_blur () {
     text_input.focus();
@@ -104,6 +110,17 @@ function text_input_on_blur () {
 
 function text_input_on_input () {
     text_input.style.width = `${text_input.value.length}ch`;
+}
+
+function text_input_on_selection () {
+    sel_start = text_input.selectionStart;
+    sel_end = text_input.selectionEnd;
+
+
+    name_length = name_span.innerText.length;
+    text_input_width = text_input.getBoundingClientRect().width;
+
+    cursor_span.style.left = `calc(${sel_start} * 1ch + ${name_length + 2} * 1ch + 1vh)`;
 }
 
 function text_input_on_keyup (event) {
@@ -118,6 +135,9 @@ text_input_on_blur();
 text_input.addEventListener("input", text_input_on_input);
 text_input_on_input();
 
+text_input.addEventListener("selectionchange", text_input_on_selection);
+text_input_on_selection();
+
 function submit_text (text) {
     fetch("back.php", {
         method: "POST",
@@ -125,7 +145,7 @@ function submit_text (text) {
             "Content-Type": "application/x-www-form-urlencoded",
         },
         body: new URLSearchParams({
-            
+            message: text,
         })
     })
 }

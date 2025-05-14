@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nowa Karta</title>
-    <iframe src="https://drive.google.com/file/d/1CVUKk5NWxV4LxYs60iCsK-bbHMHMQR_4/preview" width="640" height="480" allow="autoplay"></iframe>
+
     <style>
-    
+
     body {
         background-color: #2c2b2b;
         color: white;
@@ -18,32 +18,42 @@
         height: 100vh;
 
         font-family: monospace;
+        font-size: x-large;
+
+        overflow: hidden;
     }
 
-    #chat-container {
-        align-self: center;
-        width: 50vw;
-        height: 90vh;
-
-    }
-
+    
     .username {
         font-weight: bold;
         color: #8ae234;
     }
     
     
+    #chat-container {
+        margin-top: 1vh;
+        align-self: center;
+        width: calc(100vw - 1vh);
+        height: 93vh;
+        margin-left: 1vh;
+        
+        overflow-y: scroll;
+    }
     
     #input-container {
         width: calc(100vw - 1vh);
-        height: 9vh;
-        margin-top: 1vh;
+        height: 6vh;
         margin-left: 1vh;
+        margin-bottom: 1vh;
         
         text-align: left;
         cursor: default;
         float: left;
 
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        
     }
 
     #text-input {
@@ -63,13 +73,11 @@
 
         display: inline-block;
         position: fixed;
-        /* justify-self: left; */
         vertical-align: text-bottom;
 
 
         background: white;
         animation: blink 1s step-start infinite;
-        /* z-index: 99; */
     }
 
     @keyframes blink {
@@ -83,26 +91,31 @@
         color: #2c2b2b;
     }
 
+    #movie {
+        height: 100vh;
+    }
+
     </style>
 
 </head>
 <body>
-
-<div id="input-container">
-    <span class="username" id="username">anonymous</span>:<input type="text" id="text-input" autocomplete="off" spellcheck="false"><span class="cursor" id="cursor"></span>
-</div>
-
-
+    
 <div id="chat-container">
     
 </div>
 
+<iframe id="movie" src="https://drive.google.com/file/d/1CVUKk5NWxV4LxYs60iCsK-bbHMHMQR_4/preview" allow="autoplay"></iframe>
+
+<div id="input-container">
+    <span><span class="username" id="username">anonymous</span>:<input type="text" id="text-input" autocomplete="off" spellcheck="false"><span class="cursor" id="cursor"></span></span>
+</div>
 
 <script>
 
 let name_span = document.getElementById("username");
 let text_input = document.getElementById("text-input");
 let cursor_span = document.getElementById("cursor");
+let chat_container = document.getElementById("chat-container");
 
 function text_input_on_blur () {
     text_input.focus();
@@ -123,11 +136,13 @@ function text_input_on_selection () {
     cursor_span.style.left = `calc(${sel_start} * 1ch + ${name_length + 2} * 1ch + 1vh)`;
 }
 
-function text_input_on_keyup (event) {
+function text_input_on_keydown (event) {
     if (event.key === "Enter") {
         submit_text(text_input.value);
     }
 }
+
+text_input.addEventListener("keydown", text_input_on_keydown);
 
 text_input.addEventListener("blur", text_input_on_blur);
 text_input_on_blur();
@@ -139,6 +154,10 @@ text_input.addEventListener("selectionchange", text_input_on_selection);
 text_input_on_selection();
 
 function submit_text (text) {
+    text_input.value = "";
+    text_input_on_input();
+    text_input_on_selection();
+
     fetch("back.php", {
         method: "POST",
         headers: {
@@ -148,9 +167,41 @@ function submit_text (text) {
             message: text,
         })
     })
+
+    fetch_messages();
 }
 
-text_input.addEventListener("keyup", text_input_on_keyup);
+let previous_messages = "";
+
+function fetch_messages () {
+    fetch("back.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+    })
+    .then(response => response.text())
+    .then(messages => {
+        chat_container.innerHTML = "";
+        let splitted_lines = messages.split("\n").slice(0, -1);
+        console.log(splitted_lines);
+        for (const line of splitted_lines) {
+            let username = line.split(":")[0];
+            let rest = line.split(":").slice(1, line.length);
+            chat_container.innerHTML += `<p><span class="username">${username}</span>: ${rest}</p>`;
+        }
+
+        if (previous_messages != messages) {
+            chat_container.scrollTop = chat_container.scrollHeight;
+
+        }
+        previous_messages = messages;
+    })
+}
+
+document.addEventListener("DOMContentLoaded", fetch_messages);
+
+setInterval(fetch_messages, 500)
 
 </script>
 

@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 //login todo here
@@ -10,24 +11,26 @@ if (!isset($_SESSION["login"])) {
 define("MESSAGES_FILE_PATH", "messages.txt");
 
 if (!file_exists(MESSAGES_FILE_PATH)) {
+    // $file = fopen(MESSAGES_FILE_PATH, "w");
+    // fclose($file);
     touch(MESSAGES_FILE_PATH);
 }
 
-$messages_file = file(MESSAGES_FILE_PATH);
+$messages_file_array = file(MESSAGES_FILE_PATH);
 
 function echo_messages() {
-    echo nl2br(implode("", array_slice($messages_file, -32)));
-    return 0
+    global $messages_file_array;
+    echo implode("", array_slice($messages_file_array, -128));
+    // echo implode("", $messages_file_array);
 }
 
-if (!isset($_POST["message"])) {
-    echo_messages();
-    exit(0);
+if (isset($_POST["message"])) {
+    $message = $_SESSION["login"] . ": " . htmlspecialchars($_POST["message"]);
+
+    $messages_file = fopen(MESSAGES_FILE_PATH, "a");
+    fwrite($messages_file, $message . "\n");
+    fclose($messages_file);
 }
-
-$message = $_SESSION["login"] . ": " . $_POST["message"];
-
-fwrite($message . "\n")
 
 echo_messages();
 

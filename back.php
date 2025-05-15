@@ -5,14 +5,12 @@ session_start();
 //login todo here
 
 if (!isset($_SESSION["login"])) {
-    $_SESSION["login"] = "anonymous";
+    $_SESSION["login"] = "konformista";
 }
 
 define("MESSAGES_FILE_PATH", "messages.txt");
 
 if (!file_exists(MESSAGES_FILE_PATH)) {
-    // $file = fopen(MESSAGES_FILE_PATH, "w");
-    // fclose($file);
     touch(MESSAGES_FILE_PATH);
 }
 
@@ -21,7 +19,6 @@ $messages_file_array = file(MESSAGES_FILE_PATH);
 function echo_messages() {
     global $messages_file_array;
     echo implode("", array_slice($messages_file_array, -128));
-    // echo implode("", $messages_file_array);
 }
 
 if (isset($_POST["message"])) {

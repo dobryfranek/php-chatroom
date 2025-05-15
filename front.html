@@ -39,6 +39,11 @@
         
         overflow-y: scroll;
     }
+
+    #chat-container img {
+        max-width: 25vw;
+        max-height: 25vh;
+    }
     
     #input-container {
         width: calc(100vw - 1vh);
@@ -107,7 +112,7 @@
 <!--iframe id="movie" src="https://drive.google.com/file/d/1CVUKk5NWxV4LxYs60iCsK-bbHMHMQR_4/preview" allow="autoplay"></iframe>-->
 
 <div id="input-container">
-    <span><span class="username" id="username">anonymous</span>:<input type="text" id="text-input" autocomplete="off" spellcheck="false"><span class="cursor" id="cursor"></span></span>
+    <span><span class="username" id="username">konformista</span>:<input type="text" id="text-input" autocomplete="off" spellcheck="false"><span class="cursor" id="cursor"></span></span>
 </div>
 
 <script>
@@ -182,26 +187,32 @@ function fetch_messages () {
     })
     .then(response => response.text())
     .then(messages => {
-        chat_container.innerHTML = "";
-        let splitted_lines = messages.split("\n").slice(0, -1);
-        console.log(splitted_lines);
-        for (const line of splitted_lines) {
-            let username = line.split(":")[0];
-            let rest = line.split(":").slice(1, line.length);
+    chat_container.innerHTML = "";
+    let splitted_lines = messages.split("\n").slice(0, -1);
+    for (const line of splitted_lines) {
+        const parts = line.split("|||");
+        const username = parts[0];
+        const rest = parts.slice(1).join("|||");
+        console.log(rest.slice(0, 2))
+        if ((rest.slice(0, 6) == "/media" || rest.slice(0, 2) == "/m") && rest.split(" ").length == 2) {
+            let media_link = rest.split(" ")[1];
+            chat_container.innerHTML += `<p><span class="username">${username}</span>: <img src="${media_link}"></p>`;
+        } else {
             chat_container.innerHTML += `<p><span class="username">${username}</span>: ${rest}</p>`;
         }
+    }
 
-        if (previous_messages != messages) {
-            chat_container.scrollTop = chat_container.scrollHeight;
+    if (previous_messages != messages) {
+        chat_container.scrollTop = chat_container.scrollHeight;
+    }
+    previous_messages = messages;
+})
 
-        }
-        previous_messages = messages;
-    })
 }
 
 document.addEventListener("DOMContentLoaded", fetch_messages);
 
-setInterval(fetch_messages, 500)
+setInterval(fetch_messages, 5000)
 
 </script>
 

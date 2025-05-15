@@ -22,7 +22,7 @@ function echo_messages() {
 }
 
 if (isset($_POST["message"])) {
-    $message = $_SESSION["login"] . ": " . htmlspecialchars($_POST["message"]);
+    $message = $_SESSION["login"] . "|||" . $_POST["message"];
 
     $messages_file = fopen(MESSAGES_FILE_PATH, "a");
     fwrite($messages_file, $message . "\n");

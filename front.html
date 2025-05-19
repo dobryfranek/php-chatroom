@@ -248,7 +248,6 @@ function fetch_messages () {
         const parts = line.split("|||");
         const username = parts[0];
         const rest = parts.slice(1).join("|||");
-        console.log(rest.slice(0, 2))
         if ((rest.slice(0, 6) == "/media" || rest.slice(0, 2) == "/m") && rest.split(" ").length == 2) {
             let media_link = rest.split(" ")[1];
             chat_container.innerHTML += `<p><span class="username">${username}</span>: <img src="${media_link}"></p>`;

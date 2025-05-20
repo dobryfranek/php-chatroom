@@ -2,11 +2,13 @@
 
 session_start();
 
-//login todo here
-
-if (!isset($_SESSION["login"])) {
-    $_SESSION["login"] = "konformista";
+if (isset($_POST["set_user"])) {
+    $_SESSION["login"] = $_POST["set_user"];
 }
+
+// if (!isset($_SESSION["login"])) {
+//     $_SESSION["login"] = "konformista";
+// }
 
 define("MESSAGES_FILE_PATH", "messages.txt");
 

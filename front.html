@@ -150,7 +150,7 @@
 
 <div id="input-container">
     <span class="input-container-span">
-        <span class="username" id="username">konformista</span>:<input type="text" id="text-input" autocomplete="off" spellcheck="false">
+        <span class="username" id="username"></span>:<input type="text" id="text-input" autocomplete="off" spellcheck="false">
         <span class="cursor" id="cursor"></span>
         <button class="linux-button" style="margin-right: 1vh; float: right;" onclick="gif_popup_show()">GIF</button>
         <div id="gif-menu-background">
@@ -242,20 +242,20 @@ function fetch_messages () {
     })
     .then(response => response.text())
     .then(messages => {
-    chat_container.innerHTML = "";
-    let splitted_lines = messages.split("\n").slice(0, -1);
-    for (const line of splitted_lines) {
-        const parts = line.split("|||");
-        const username = parts[0];
-        const rest = parts.slice(1).join("|||");
-        if ((rest.slice(0, 6) == "/media" || rest.slice(0, 2) == "/m") && rest.split(" ").length == 2) {
-            let media_link = rest.split(" ")[1];
-            chat_container.innerHTML += `<p><span class="username">${username}</span>: <img src="${media_link}"></p>`;
-        } else {
-            chat_container.innerHTML += `<p><span class="username">${username}</span>: ${rest}</p>`;
-        }
+        chat_container.innerHTML = "";
+        let splitted_lines = messages.split("\n").slice(0, -1);
+        for (const line of splitted_lines) {
+            const parts = line.split("|||");
+            const username = parts[0];
+            const rest = parts.slice(1).join("|||");
+            if ((rest.slice(0, 6) == "/media" || rest.slice(0, 2) == "/m") && rest.split(" ").length == 2) {
+                let media_link = rest.split(" ")[1];
+                chat_container.innerHTML += `<p><span class="username">${username}</span>: <img src="${media_link}"></p>`;
+            } else {
+                chat_container.innerHTML += `<p><span class="username">${username}</span>: ${rest}</p>`;
+            }
     }
-
+    
     if (previous_messages != messages) {
         chat_container.scrollTop = chat_container.scrollHeight;
     }
@@ -264,13 +264,37 @@ function fetch_messages () {
 
 }
 
+function get_username () {
+    user = prompt("user: ");
+    if (!user) {
+        user = "konformista";
+    }
+    user = user.trim();
+    name_span.innerText = user;
+    fetch("back.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+            set_user: user
+        })
+    })
+    
+    
+    
+    return user;
+}
+
+get_username();
+
 
 document.addEventListener("DOMContentLoaded", fetch_messages);
+
 
 setInterval(fetch_messages, 500)
 
 </script>
-
 
 
 </body>

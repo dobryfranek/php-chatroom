@@ -20,7 +20,7 @@ $messages_file_array = file(MESSAGES_FILE_PATH);
 
 function echo_messages() {
     global $messages_file_array;
-    echo implode("", array_slice($messages_file_array, -128));
+    echo implode("", array_slice($messages_file_array, -32));
 }
 
 if (isset($_POST["message"])) {

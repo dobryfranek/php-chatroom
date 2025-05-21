@@ -21,6 +21,7 @@
         font-size: x-large;
 
         overflow: hidden;
+        overflow-x: hidden;
     }
 
     
@@ -67,7 +68,7 @@
 
         cursor: default;
 
-        width: 10vw;
+        max-width: 50vw;
         margin-left: 1ch;
     }
 
@@ -246,7 +247,7 @@ function fetch_messages () {
         let splitted_lines = messages.split("\n").slice(0, -1);
         for (const line of splitted_lines) {
             const parts = line.split("|||");
-            const username = parts[0];
+            const username = escape_html(parts[0]);
             const rest = parts.slice(1).join("|||");
             if ((rest.slice(0, 6) == "/media" || rest.slice(0, 2) == "/m") && rest.split(" ").length == 2) {
                 let media_link = rest.split(" ")[1];
@@ -265,7 +266,7 @@ function fetch_messages () {
 }
 
 function get_username () {
-    user = prompt("user: ");
+    user = prompt("username: ");
     if (!user) {
         user = "konformista";
     }
@@ -284,6 +285,15 @@ function get_username () {
     
     
     return user;
+}
+
+function escape_html (string) {
+    return string
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 get_username();

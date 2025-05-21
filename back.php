@@ -3,12 +3,13 @@
 session_start();
 
 if (isset($_POST["set_user"])) {
-    $_SESSION["login"] = $_POST["set_user"];
+    $demanded_login = $_POST["set_user"];
+    if (str_contains($demanded_login, "|")) {
+        $_SESSION["login"] = "konformista";
+    } else {
+        $_SESSION["login"] = substr($demanded_login, 0, 64); //limit username length
+    }
 }
-
-// if (!isset($_SESSION["login"])) {
-//     $_SESSION["login"] = "konformista";
-// }
 
 define("MESSAGES_FILE_PATH", "messages.txt");
 
@@ -24,6 +25,7 @@ function echo_messages() {
 }
 
 if (isset($_POST["message"])) {
+    $timestamp = date("H:i:s");
     $message = $_SESSION["login"] . "|||" . $_POST["message"];
 
     $messages_file = fopen(MESSAGES_FILE_PATH, "a");

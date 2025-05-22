@@ -261,6 +261,9 @@ function fetch_messages () {
         chat_container.scrollTop = chat_container.scrollHeight;
     }
     previous_messages = messages;
+
+    text_input_on_selection();
+
 })
 
 }
@@ -282,8 +285,6 @@ function get_username () {
         })
     })
     
-    
-    
     return user;
 }
 
@@ -296,8 +297,27 @@ function escape_html (string) {
     .replace(/'/g, "&#039;");
 }
 
-get_username();
+fetch("back.php", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({
+        get_user: true
+    })
+})
+.then(response => response.text())
+.then(data => {
+    if (data == "konformista") {
+        get_username();
+    } else {
+        name_span.innerText = data.trim();
+    }
+})
 
+name_span.onclick = () => {
+    
+}
 
 document.addEventListener("DOMContentLoaded", fetch_messages);
 

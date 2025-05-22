@@ -42,9 +42,17 @@
     }
 
     #chat-container img {
-        max-width: 25vw;
-        max-height: 25vh;
+        max-width: 33vw;
+        max-height: 33vh;
     }
+
+    #file-list-container {
+        width: 15vw;
+        display: none;
+        flex-direction: column;
+        gap: 10%;
+    }
+
     
     #input-container {
         width: calc(100vw - 1vh);
@@ -68,7 +76,7 @@
 
         cursor: default;
 
-        max-width: 50vw;
+        max-width: 90vw;
         margin-left: 1ch;
     }
 
@@ -97,7 +105,6 @@
 
 
     .linux-button {
-
         padding: 4px 12px;
         border: 1px solid #444;
         background-color: #2c2b2b;
@@ -140,20 +147,23 @@
         display: block;
     }
 
+    #username {
+        cursor: pointer;
+    }
+
     </style>
 
 </head>
 <body>
     
-<div id="chat-container">
-    
-</div>
+<div id="chat-container"></div><div id="file-list-container"></div>
 
 <div id="input-container">
     <span class="input-container-span">
         <span class="username" id="username"></span>:<input type="text" id="text-input" autocomplete="off" spellcheck="false">
         <span class="cursor" id="cursor"></span>
-        <button class="linux-button" style="margin-right: 1vh; float: right;" onclick="gif_popup_show()">GIF</button>
+        <!-- <button class="linux-button" style="margin-right: 1vh; float: right;" onclick="gif_popup_show()">GIF</button> -->
+        <!-- <button class="linux-button" style="margin-right: 1vh; float: right;" onclick="upload_file()">UPLOAD FILE</button> -->
         <div id="gif-menu-background">
             <div id="gif-menu-div">
                 gify tu będą
@@ -164,11 +174,14 @@
 </div>
 
 <script>
-    
-let name_span = document.getElementById("username");
-let text_input = document.getElementById("text-input");
-let cursor_span = document.getElementById("cursor");
-let chat_container = document.getElementById("chat-container");
+
+var make_html_safe_by_escaping = true;
+
+var name_span = document.getElementById("username");
+var text_input = document.getElementById("text-input");
+var cursor_span = document.getElementById("cursor");
+var chat_container = document.getElementById("chat-container");
+var file_list_container = document.getElementById("file-list-container");
 
 function gif_popup_show () {
     document.getElementById("gif-menu-background").style.display = "block";    
@@ -232,7 +245,7 @@ function submit_text (text) {
     fetch_messages();
 }
 
-let previous_messages = "";
+var previous_messages = "";
 
 function fetch_messages () {
     fetch("back.php", {
@@ -244,28 +257,50 @@ function fetch_messages () {
     .then(response => response.text())
     .then(messages => {
         chat_container.innerHTML = "";
-        let splitted_lines = messages.split("\n").slice(0, -1);
+        var splitted_lines = messages.split("\n").slice(0, -1);
         for (const line of splitted_lines) {
             const parts = line.split("|||");
-            const username = escape_html(parts[0]);
-            const rest = parts.slice(1).join("|||");
-            if ((rest.slice(0, 6) == "/media" || rest.slice(0, 2) == "/m") && rest.split(" ").length == 2) {
-                let media_link = rest.split(" ")[1];
+            const username = make_html_safe_by_escaping ? escape_html(parts[0]) : parts[0];
+            const rest = make_html_safe_by_escaping ? escape_html(parts.slice(1).join("|||")) : parts.slice(1).join("|||");
+            if ((rest.slice(0, 6) == "/media" || rest.slice(0, 3) == "/m ") && rest.split(" ").length == 2) {
+                var media_link = rest.split(" ")[1];
                 chat_container.innerHTML += `<p><span class="username">${username}</span>: <img src="${media_link}"></p>`;
             } else {
                 chat_container.innerHTML += `<p><span class="username">${username}</span>: ${rest}</p>`;
             }
-    }
+        }
     
-    if (previous_messages != messages) {
-        chat_container.scrollTop = chat_container.scrollHeight;
-    }
-    previous_messages = messages;
+        if (previous_messages != messages) {
+            chat_container.scrollTop = chat_container.scrollHeight;
+        }
+        previous_messages = messages;
 
-    text_input_on_selection();
+        text_input_on_selection();
 
-})
+    })
+}
 
+function fetch_file_list () {
+    fetch("back.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+            get_file_list: true,
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // var file_list_array = Object.keys(data).map((key) => data[key]);
+        // if (file_list_array.length > 0) {
+        //     console.log(file_list_array.length + " files")
+        //     chat_container.style.width = "calc(100vw - 1vh - 15vw)";
+        //     file_list_container.style.display = "flex";
+        // } else {
+        //     chat_container.style.width = "calc(100vw - 1vh)"
+        // }
+    })
 }
 
 function get_username () {
@@ -313,16 +348,30 @@ fetch("back.php", {
     } else {
         name_span.innerText = data.trim();
     }
-})
+});
 
 name_span.onclick = () => {
     get_username();
 }
 
+document.body.addEventListener("dragover", e => e.preventDefault());
+
+document.body.addEventListener("drop", e => {
+    e.preventDefault();
+    var file = e.dataTransfer.files[0];
+    var form_data = new FormData();
+    form_data.append("file", file);
+
+    fetch("back.php", {
+        method: "POST",
+        body: form_data
+    });
+})
+
 document.addEventListener("DOMContentLoaded", fetch_messages);
 
-
-setInterval(fetch_messages, 500)
+setInterval(fetch_messages, 500);
+setInterval(fetch_file_list, 1000);
 
 </script>
 

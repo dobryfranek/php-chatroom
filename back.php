@@ -2,6 +2,7 @@
 
 session_start();
 
+
 if (isset($_POST["set_user"])) {
     $demanded_login = $_POST["set_user"];
     if (str_contains($demanded_login, "|")) {
@@ -9,6 +10,15 @@ if (isset($_POST["set_user"])) {
     } else {
         $_SESSION["login"] = substr($demanded_login, 0, 64); //limit username length
     }
+}
+
+if (!isset($_SESSION["login"])) {
+    $_SESSION["login"] = "konformista";
+}
+
+if (isset($_POST["get_user"])) {
+    echo $_SESSION["login"];
+    die();
 }
 
 define("MESSAGES_FILE_PATH", "messages.txt");

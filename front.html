@@ -7,6 +7,12 @@
 
     <style>
 
+    html {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+    }
+
     body {
         background-color: #2c2b2b;
         color: white;
@@ -16,6 +22,7 @@
         flex-direction: column;
         /* justify-content: center; */
         height: 100vh;
+        width: 100vw;
 
         font-family: monospace;
         font-size: x-large;
@@ -55,11 +62,18 @@
         max-height: 33vh;
     }
 
+    #chat-container p {
+        word-wrap: break-word;
+    }
+
     #file-list-container {
         margin-top: 1vh;
         margin-right: 1vh;
         padding: 1vw;
-        width: 10vw;
+        word-wrap: break-word;
+        min-width: 15vw;
+        max-width: 15vw;
+        width: 15vw;
         float: right;
         display: flex;
         flex-direction: column;
@@ -71,12 +85,24 @@
     #file-list-container a {
         text-decoration: none;
         color: #8ae234;
-        font-weight: bold;
+        /* font-weight: bold; */
 
     }
+
+    #file-list-container a:hover {
+        /* text-decoration: underline; */
+        font-weight: bold;
+        color: #aaff54
+    }
+    #file-list-container a:active {
+        /* text-decoration: underline; */
+        font-weight: bold;
+        color: #aaff54
+    }
+
     
     #input-container {
-        width: calc(100vw - 1vh);
+        width: calc(100vw - 4vh);
         height: 6vh;
         margin-left: 1vh;
         margin-bottom: 1vh;
@@ -184,11 +210,11 @@
 
 <span class="upper-span" id="upper-span">
     <div id="chat-container"></div>
-    <div id="file-list-container">FILES</div>
+    <div id="file-list-container"><span style="text-align: center">FILES</span></div>
 </span>
 
 <div id="input-container">
-    <span class="input-container-span">
+    <span>
         <span class="username" id="username"></span>:<input type="text" id="text-input" autocomplete="off" spellcheck="false">
         <span class="cursor" id="cursor"></span>
         <!-- <button class="linux-button" style="margin-right: 1vh; float: right;" onclick="gif_popup_show()">GIF</button> -->
@@ -322,7 +348,7 @@ function fetch_file_list () {
     .then(response => response.json())
     .then(data => {
         var file_list_array = Object.keys(data).map((key) => data[key]);
-        file_list_container.innerHTML = "FILES";
+        file_list_container.innerHTML = "<span style='text-align: center'>FILES</span>";
         file_list_array.forEach(file => {
             file = file.split("/").pop()
             file_list_container.innerHTML += `<a href="pliki/${file}" download>${make_html_safe_by_escaping ? escape_html(file) : file}</a>`;
@@ -395,7 +421,11 @@ document.body.addEventListener("drop", e => {
     });
 })
 
-document.addEventListener("DOMContentLoaded", fetch_messages);
+document.addEventListener("DOMContentLoaded", () => {
+    fetch_messages();
+    fetch_file_list();
+})
+    
 
 setInterval(fetch_messages, 500);
 setInterval(fetch_file_list, 1000);

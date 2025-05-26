@@ -57,6 +57,11 @@
         flex-direction: row;
     }
 
+    #upper-right-span {
+        display: flex;
+        flex-direction: column;
+    }
+
     #chat-container img {
         max-width: 33vw;
         max-height: 33vh;
@@ -67,6 +72,7 @@
     }
 
     #file-list-container {
+        height: 70%;
         margin-top: 1vh;
         margin-right: 1vh;
         padding: 1vw;
@@ -81,14 +87,14 @@
         box-shadow: 0 0 32px rgba(0, 0, 0, 1);
         border-radius: 1vh;
     }
-
+    
     #file-list-container a {
         text-decoration: none;
         color: #8ae234;
         /* font-weight: bold; */
-
+        
     }
-
+    
     #file-list-container a:hover {
         /* text-decoration: underline; */
         font-weight: bold;
@@ -100,6 +106,15 @@
         color: #aaff54
     }
 
+    #active-users-container {
+        height: 30%;
+        padding: 1vw;
+        max-width: 15vw;
+        min-width: 15vw;
+        margin-top: 1vh;
+        box-shadow: 0 0 32px rgba(0, 0, 0, 1);
+        border-radius: 1vh;
+    }
     
     #input-container {
         width: calc(100vw - 4vh);
@@ -211,14 +226,15 @@
 <span class="upper-span" id="upper-span">
     <div id="chat-container"></div>
 
-    <div id="file-list-container">
-        <span style="text-align: center">FILES</span>
-    </div>
+    <span id="upper-right-span">
+        <div id="file-list-container">
+            <span style="text-align: center">FILES</span>
+        </div>
 
-    <div id="active-users-container">
-        <span style="text-align: center">ACTIVE USERS</span>
-        <span id="active-users"></span>
-    </div>
+        <div id="active-users-container">
+            <span id="active-users"></span>
+        </div>
+    </span>
 
 </span>
 
@@ -453,6 +469,7 @@ function get_users () {
 document.addEventListener("DOMContentLoaded", () => {
     fetch_messages();
     fetch_file_list();
+    get_users();2
 })
     
 

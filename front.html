@@ -210,7 +210,16 @@
 
 <span class="upper-span" id="upper-span">
     <div id="chat-container"></div>
-    <div id="file-list-container"><span style="text-align: center">FILES</span></div>
+
+    <div id="file-list-container">
+        <span style="text-align: center">FILES</span>
+    </div>
+
+    <div id="active-users-container">
+        <span style="text-align: center">ACTIVE USERS</span>
+        <span id="active-users"></span>
+    </div>
+
 </span>
 
 <div id="input-container">
@@ -229,26 +238,27 @@
 </div>
 
 <script>
-
-var make_html_safe_by_escaping = true;
-
-var name_span = document.getElementById("username");
-var text_input = document.getElementById("text-input");
-var cursor_span = document.getElementById("cursor");
-var chat_container = document.getElementById("chat-container");
-var file_list_container = document.getElementById("file-list-container");
-
-function gif_popup_show () {
-    document.getElementById("gif-menu-background").style.display = "block";    
-}
-
-function gif_popup_hide () {
-    document.getElementById("gif-menu-background").style.display = "none";    
-}
-
-function text_input_on_blur () {
-    text_input.focus();
-}
+    
+    var make_html_safe_by_escaping = true;
+    
+    var name_span = document.getElementById("username");
+    var text_input = document.getElementById("text-input");
+    var cursor_span = document.getElementById("cursor");
+    var chat_container = document.getElementById("chat-container");
+    var file_list_container = document.getElementById("file-list-container");
+    var active_users = document.getElementById("active-users");
+    
+    function gif_popup_show () {
+        document.getElementById("gif-menu-background").style.display = "block";    
+    }
+    
+    function gif_popup_hide () {
+        document.getElementById("gif-menu-background").style.display = "none";    
+    }
+    
+    function text_input_on_blur () {
+        text_input.focus();
+    }
     
 function text_input_on_input () {
     text_input.style.width = `${text_input.value.length}ch`;
@@ -421,6 +431,25 @@ document.body.addEventListener("drop", e => {
     });
 })
 
+function get_users () {
+    fetch("back.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+            get_users: true
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        active_users.innerHTML = "";
+        data.forEach(user => {
+            active_users.innerHTML += `<span class="username">${make_html_safe_by_escaping ? escape_html(user) : user}</span><br>`;
+        });
+    });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     fetch_messages();
     fetch_file_list();
@@ -429,6 +458,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 setInterval(fetch_messages, 500);
 setInterval(fetch_file_list, 1000);
+setInterval(get_users, 2000);
 
 </script>
 

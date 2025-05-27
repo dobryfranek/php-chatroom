@@ -31,12 +31,10 @@
         overflow-x: hidden;
     }
 
-    
     .username {
         font-weight: bold;
         color: #8ae234;
     }
-    
     
     #chat-container {
         margin-top: 1vh;
@@ -107,6 +105,9 @@
     }
 
     #active-users-container {
+        display: flex;
+        flex-direction: column;
+        overflow-y: scroll;
         height: 30%;
         padding: 1vw;
         max-width: 15vw;
@@ -114,6 +115,9 @@
         margin-top: 1vh;
         box-shadow: 0 0 32px rgba(0, 0, 0, 1);
         border-radius: 1vh;
+        text-align: center;
+        gap: 1%;
+        scrollbar-width: none;
     }
     
     #input-container {
@@ -218,6 +222,7 @@
         cursor: pointer;
     }
 
+    
     </style>
 
 </head>
@@ -232,7 +237,7 @@
         </div>
 
         <div id="active-users-container">
-            <span id="active-users"></span>
+
         </div>
     </span>
 
@@ -262,7 +267,7 @@
     var cursor_span = document.getElementById("cursor");
     var chat_container = document.getElementById("chat-container");
     var file_list_container = document.getElementById("file-list-container");
-    var active_users = document.getElementById("active-users");
+    var active_users = document.getElementById("active-users-container");
     
     function gif_popup_show () {
         document.getElementById("gif-menu-background").style.display = "block";    
@@ -459,9 +464,9 @@ function get_users () {
     })
     .then(response => response.json())
     .then(data => {
-        active_users.innerHTML = "";
+        active_users.innerHTML = "USERS<br>";
         data.forEach(user => {
-            active_users.innerHTML += `<span class="username">${make_html_safe_by_escaping ? escape_html(user) : user}</span><br>`;
+            active_users.innerHTML += `<span class="username">${make_html_safe_by_escaping ? escape_html(user) : user}</span>`;
         });
     });
 }
@@ -469,7 +474,7 @@ function get_users () {
 document.addEventListener("DOMContentLoaded", () => {
     fetch_messages();
     fetch_file_list();
-    get_users();2
+    get_users();
 })
     
 

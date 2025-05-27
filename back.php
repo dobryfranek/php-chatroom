@@ -7,7 +7,7 @@ define("ACTIVE_USER_FILE_PATH", "users.json");
 define("UPLOAD_DIR", "pliki/");
 define("MESSAGE_RETURN_LIMIT", 32);
 define("LOGIN_LENGTH_LIMIT", 64);
-define("INACTIVITY_LIMIT", 30);
+define("INACTIVITY_LIMIT", 16);
 
 foreach (array(MESSAGES_FILE_PATH, ACTIVE_USER_FILE_PATH) as $path) {
     if (!file_exists($path)) {touch($path);}
@@ -16,10 +16,6 @@ foreach (array(MESSAGES_FILE_PATH, ACTIVE_USER_FILE_PATH) as $path) {
 if (!is_dir(UPLOAD_DIR)) {
     mkdir(UPLOAD_DIR, 0755, true);
 }
-
-$json_from_file = json_decode(file_get_contents(ACTIVE_USER_FILE_PATH), true);
-$json_from_file[$_SESSION["login"]] = time();
-file_put_contents(ACTIVE_USER_FILE_PATH, json_encode($json_from_file, JSON_PRETTY_PRINT));
 
 if (isset($_POST["get_users"])) {
     $active_users = json_decode(file_get_contents(ACTIVE_USER_FILE_PATH), true);
@@ -42,6 +38,10 @@ if (isset($_POST["set_user"])) {
         $_SESSION["login"] = substr($demanded_login, 0, LOGIN_LENGTH_LIMIT);
     }
 }
+
+$json_from_file = json_decode(file_get_contents(ACTIVE_USER_FILE_PATH), true);
+$json_from_file[$_SESSION["login"]] = time();
+file_put_contents(ACTIVE_USER_FILE_PATH, json_encode($json_from_file, JSON_PRETTY_PRINT));
 
 if (!isset($_SESSION["login"])) {
     $_SESSION["login"] = "konformista";
